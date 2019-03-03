@@ -46,12 +46,14 @@ ID_BLOCK_NUM_INDIR = 3
 ID_BLOCK_NUM_DIR = 4
 
 if (len(sys.argv) != 2):
-    print("Too many arguements\n")
+    print("ERROR: Too many arguements\n")
     exit(1)
 
 filename = sys.argv[1]
 print ("filename: " + filename)
 
+# got help from:
+# https://docs.python.org/3/library/csv.html#module-contents
 with open(filename, newline='') as csvfile:
     info = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in info:
