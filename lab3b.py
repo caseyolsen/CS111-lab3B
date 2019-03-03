@@ -67,13 +67,10 @@ with open('trivial.csv', newline='') as csvfile:
 
 
 
-'''
-def IsLegalBlock(b)
-{
-    if (b < 0 || b >= total_blocks || b < first_legal_block):
-    return false;
-    else:
-    return true;
 
-}
-'''
+def isLegalBlock(b):
+    if b < 0 or b >= total_blocks: #or b < first_legal_block):
+        return False
+    else:
+        return True
+
