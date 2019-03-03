@@ -3,6 +3,7 @@
 # EMAIL: casey.olsen@gmail.com
 
 import csv
+import sys
 
 total_blocks = 0
 total_inodes = 0
@@ -44,7 +45,14 @@ ID_OFFSET = 2
 ID_BLOCK_NUM_INDIR = 3
 ID_BLOCK_NUM_DIR = 4
 
-with open('trivial.csv', newline='') as csvfile:
+if (len(sys.argv) != 2):
+    print("Too many arguements\n")
+    exit(1)
+
+filename = sys.argv[1]
+print ("filename: " + filename)
+
+with open(filename, newline='') as csvfile:
     info = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in info:
         row = row[0].split(',')
