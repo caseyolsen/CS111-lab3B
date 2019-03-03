@@ -3,6 +3,7 @@
 # EMAIL: casey.olsen@gmail.com,kenna.wang6@gmail.com
 
 import csv
+import sys
 
 total_blocks = 0
 total_inodes = 0
@@ -44,7 +45,14 @@ ID_OFFSET = 2
 ID_BLOCK_NUM_INDIR = 3
 ID_BLOCK_NUM_DIR = 4
 
-with open('trivial.csv', newline='') as csvfile:
+if (len(sys.argv) != 2):
+    print("Too many arguements\n")
+    exit(1)
+
+filename = sys.argv[1]
+print ("filename: " + filename)
+
+with open(filename, newline='') as csvfile:
     info = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in info:
         row = row[0].split(',')
@@ -67,13 +75,6 @@ with open('trivial.csv', newline='') as csvfile:
 
 
 
-'''
-def IsLegalBlock(b):
-    if (b < 0 || b >= total_blocks || b < first_legal_block):
-        return false
-    else:
-        return true
-
 def IsFreeBlocks(b):
     if IsLegalBlock(b) == false:
         return false
@@ -85,5 +86,9 @@ def IsFreeInode(i):
         return false
     else:
         return inode_bitmap[i]
-'''
 
+def isLegalBlock(b):
+    if b < 0 or b >= total_blocks: #or b < first_legal_block):
+        return False
+    else:
+        return True

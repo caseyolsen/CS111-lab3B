@@ -5,8 +5,8 @@
 
 .SILENT:
 
-default:
-	python3 lab3b.py
+#default:#
+#	python3 lab3b.py trivial.csv
 
 clean:
 	rm -f *.tar.gz lab3b
