@@ -1,6 +1,6 @@
 # NAME: Casey Olsen,Kenna Wang
-# ID: 004938486,
-# EMAIL: casey.olsen@gmail.com
+# ID: 004938486,604939143
+# EMAIL: casey.olsen@gmail.com,kenna.wang6@gmail.com
 
 import csv
 
@@ -68,12 +68,22 @@ with open('trivial.csv', newline='') as csvfile:
 
 
 '''
-def IsLegalBlock(b)
-{
+def IsLegalBlock(b):
     if (b < 0 || b >= total_blocks || b < first_legal_block):
-    return false;
+        return false
     else:
-    return true;
+        return true
 
-}
+def IsFreeBlocks(b):
+    if IsLegalBlock(b) == false:
+        return false
+    else:
+        return block_bitmap[b]
+
+def IsFreeInode(i):
+    if ( i > 2 && i < reserved_inodes) || i < total_inodes:
+        return false
+    else:
+        return inode_bitmap[i]
 '''
+
