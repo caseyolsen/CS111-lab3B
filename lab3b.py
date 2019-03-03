@@ -1,6 +1,6 @@
 # NAME: Casey Olsen,Kenna Wang
-# ID: 004938486,
-# EMAIL: casey.olsen@gmail.com
+# ID: 004938486,604939143
+# EMAIL: casey.olsen@gmail.com,kenna.wang6@gmail.com
 
 import csv
 import sys
@@ -77,10 +77,20 @@ with open(filename, newline='') as csvfile:
 
 
 
+def IsFreeBlocks(b):
+    if IsLegalBlock(b) == false:
+        return false
+    else:
+        return block_bitmap[b]
+
+def IsFreeInode(i):
+    if ( i > 2 && i < reserved_inodes) || i < total_inodes:
+        return false
+    else:
+        return inode_bitmap[i]
 
 def isLegalBlock(b):
     if b < 0 or b >= total_blocks: #or b < first_legal_block):
         return False
     else:
         return True
-
