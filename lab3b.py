@@ -147,13 +147,13 @@ def isValidInode(inode):
 
 def check_inodes():
     for i in range(0, len(input_dict["INODE"])):
-        if inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] == '0': 
+        if inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] == 0: 
             print("ALLOCATED INODE {} ON FREELIST".format(input_dict["INODE"][i][I_INODE_NUMBER]))
         else:
-            inode_bitmap[i] == 2
-            #these are used inodes (correctly) not on the free list
-            #for j in range(0, 12):
-                #check_block(input_dict["INODE"][i][I_BLOCKS + j], 0, 0, input_dict["INODE"][i][I_INODE_NUMBER])
+            inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] = 2
+            #These are used inodes (correctly) not on the free list
+            for j in range(0, 12):
+                check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), 0, 0, input_dict["INODE"][i][I_INODE_NUMBER])
     for i in range(first_non_reserved_inode, len(inode_bitmap)):
         if inode_bitmap[i] == 1:
             print("UNALLOCATED INODE {} NOT ON FREELIST".format(i))
@@ -176,18 +176,18 @@ def check_block(b, offset, level, inode):
     if b == 1024/block_size or b == block_block or b == inode_block:
         print("RESERVED {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
         return
-    if block_bitmap[b - first_block] == 0:
+    if block_bitmap[b] == 0:
         print("ALLOCATED BLOCK {} ON FREELIST".format(b))
         return
-    if block_bitmap[b - first_block] != 1:
+    if block_bitmap[b] != 1:
         print("DUPLICATE {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
-        if block_bitmap[b - first_block] != -1:
+        if block_bitmap[b] != -1:
             print("DUPLICATE {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_bitmap[b][0], \
                                                                          block_bitmap[b][1], \
                                                                          block_bitmap[b][2], \
                                                                          block_bitmap[b][3]))
-        block_bitmap[b - first_block] = -1
+        block_bitmap[b] = -1
         return
-    block_bitmap[b - first_block] = [block_type, b, inode, offset]
+    block_bitmap[b] = [block_type, b, inode, offset]
 
 main()
