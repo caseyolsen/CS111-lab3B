@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 # NAME: Casey Olsen,Kenna Wang
 # ID: 004938486,604939143
 # EMAIL: casey.olsen@gmail.com,kenna.wang6@gmail.com
@@ -46,7 +47,7 @@ ID_BLOCK_NUM_INDIR = 3
 ID_BLOCK_NUM_DIR = 4
 
 if (len(sys.argv) != 2):
-    print("Too many arguements\n")
+    print("Incorrect number of arguments")
     exit(1)
 
 filename = sys.argv[1]
@@ -76,14 +77,14 @@ with open(filename, newline='') as csvfile:
 
 
 def IsFreeBlocks(b):
-    if IsLegalBlock(b) == false:
-        return false
+    if IsLegalBlock(b) == False:
+        return False
     else:
         return block_bitmap[b]
 
 def IsFreeInode(i):
-    if ( i > 2 && i < reserved_inodes) || i < total_inodes:
-        return false
+    if ( i > 2 and i < reserved_inodes) or i < total_inodes:
+        return False
     else:
         return inode_bitmap[i]
 
