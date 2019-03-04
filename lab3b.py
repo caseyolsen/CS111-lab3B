@@ -14,6 +14,8 @@ block_size = 0
 inode_size = 0
 blocks_per_group = 0
 first_non_reserved_inode = 0
+inode_block = 0
+block_block = 0
 
 input_dict = {}
 
@@ -77,6 +79,21 @@ with open(filename, newline='') as csvfile:
     print(input_dict)
 
 
+def checkBlock(b, offset, level, inode):
+    if level == 0:
+        block_type = ""
+    elif level == 1:
+        block_type = "INDIRECT "
+    elif level == 2:
+        block_type = "DOUBLE INDIRECT "
+    else:
+        block_type = "TRIPLE INDIRECT "
+    if b < 0 or b >= total_blocks:
+        print("INVALID {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
+    elif b == 1024/block_size or b == block_block or b == inode_block:
+        print("RESERVED {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
+    #if block_bitmap[b - first_block]
+        #print("ALLOCATED BLOCK")
 
 def IsFreeBlocks(b):
     if IsLegalBlock(b) == False:
@@ -90,7 +107,7 @@ def IsFreeInode(i):
     else:
         return inode_bitmap[i]
 
-def isLegalBlock(b):
+def IsLegalBlock(b):
     if b < 0 or b >= total_blocks: #or b < first_legal_block):
         return False
     else:
