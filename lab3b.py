@@ -64,6 +64,7 @@ def main():
     get_inode_bitmap()
     check_links()
     check_inodes()
+    check_indirect_blocks()
 
     # got help from:
 # https://docs.python.org/3/library/csv.html#module-contents
@@ -149,14 +150,19 @@ def check_inodes():
     for i in range(0, len(input_dict["INODE"])):
         if inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] == 0: 
             print("ALLOCATED INODE {} ON FREELIST".format(input_dict["INODE"][i][I_INODE_NUMBER]))
+            return
         else:
             inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] = 2
             #These are used inodes (correctly) not on the free list
             for j in range(0, 12):
-                check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), 0, 0, input_dict["INODE"][i][I_INODE_NUMBER])
+                check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), j, 0, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 12]), 1, 13, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 2, 268, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 3, 65804, input_dict["INODE"][i][I_INODE_NUMBER])
     for i in range(first_non_reserved_inode, len(inode_bitmap)):
         if inode_bitmap[i] == 1:
             print("UNALLOCATED INODE {} NOT ON FREELIST".format(i))
+            return
     return
 
 def check_block(b, offset, level, inode):
@@ -189,5 +195,8 @@ def check_block(b, offset, level, inode):
         block_bitmap[b] = -1
         return
     block_bitmap[b] = [block_type, b, inode, offset]
+
+def check_indirect_blocks():
+    return
 
 main()
