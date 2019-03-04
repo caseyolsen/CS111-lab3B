@@ -68,7 +68,7 @@ def initialize(filename):
     # https://docs.python.org/3/library/csv.html#module-contents
     try:
         with open(filename, newline='') as csvfile:
-            info = csv.reader(csvfile, delimiter=' ', quotechar='|')
+            info = csv.reader(csvfile, delimiter='\n', quotechar='|')
             for row in info:
                 row = row[0].split(',')
                 if row[0] == "SUPERBLOCK":
