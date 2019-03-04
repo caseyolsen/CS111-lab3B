@@ -57,7 +57,7 @@ def main():
         exit(1)
 
     filename = sys.argv[1]
-    print ("filename: " + filename)
+    #print ("filename: " + filename)
 
     initialize(filename)
     get_block_bitmap()
@@ -100,31 +100,31 @@ def initialize(filename):
                     input_dict[row[0]].append(row[1:])
                 #print(row)
                 #print(', '.join(row))
-            print(input_dict)
+            #print(input_dict)
     except EnvironmentError:
         print ("ERROR opening file\n")
         exit(1)
 
 def get_block_bitmap():
     last_block = int(input_dict["BFREE"][-1])
-    print(last_block)
-    print(total_blocks)
+    #print(last_block)
+    #print(total_blocks)
     for i in range(0, total_blocks):
         if str(i) in input_dict["BFREE"]:
             block_bitmap.append(0)
-            print(i)
+            #print(i)
         else:
             block_bitmap.append(1)
-    print(block_bitmap)
+    #print(block_bitmap)
 
 def get_inode_bitmap():
     for i in range(0, total_inodes):
         if str(i) in input_dict["IFREE"]:
             inode_bitmap.append(0)
-            print(i)
+            #print(i)
         else:
             inode_bitmap.append(1)
-    print(inode_bitmap)
+    #print(inode_bitmap)
 
 def check_links():
     link_count = [0] * total_inodes
@@ -156,9 +156,9 @@ def check_inodes():
             #These are used inodes (correctly) not on the free list
             for j in range(0, 12):
                 check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), j, 0, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 12]), 1, 13, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 2, 268, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 3, 65804, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 12]), 12, 1, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 13, 2, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 14, 3, input_dict["INODE"][i][I_INODE_NUMBER])
     for i in range(first_non_reserved_inode, len(inode_bitmap)):
         if inode_bitmap[i] == 1:
             print("UNALLOCATED INODE {} NOT ON FREELIST".format(i))
@@ -176,6 +176,7 @@ def check_block(b, offset, level, inode):
         block_type = "DOUBLE INDIRECT "
     else:
         block_type = "TRIPLE INDIRECT "
+    #print("CHECKING {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
     if b < 0 or b >= total_blocks:
         print("INVALID {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
         return
@@ -197,6 +198,11 @@ def check_block(b, offset, level, inode):
     block_bitmap[b] = [block_type, b, inode, offset]
 
 def check_indirect_blocks():
+    for i in range(0, len(input_dict["INDIRECT"])):
+        check_block(int(input_dict["INDIRECT"][i][ID_BLOCK_NUM_DIR]), \
+                        input_dict["INDIRECT"][i][ID_OFFSET], \
+                        input_dict["INDIRECT"][i][ID_INDIR_LEVEL], \
+                        input_dict["INDIRECT"][i][ID_INODE_NUM])
     return
 
 main()
