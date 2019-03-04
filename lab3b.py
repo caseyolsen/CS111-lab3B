@@ -1,3 +1,4 @@
+#!/usr/local/bin/python3
 # NAME: Casey Olsen,Kenna Wang
 # ID: 004938486,604939143
 # EMAIL: casey.olsen@gmail.com,kenna.wang6@gmail.com
@@ -28,7 +29,7 @@ I_LINK_COUNT = 5
 I_LAST_CHANGE = 6
 I_MOD_TIME = 7
 I_ACCESS_TIME = 8
-I_FILE_SIZE = 9 
+I_FILE_SIZE = 9
 
 # DIRECTORY ENTRIES
 D_PARENT_INODE = 0
@@ -44,7 +45,6 @@ ID_INDIR_LEVEL = 1
 ID_OFFSET = 2
 ID_BLOCK_NUM_INDIR = 3
 ID_BLOCK_NUM_DIR = 4
-
 
 
 def main():
