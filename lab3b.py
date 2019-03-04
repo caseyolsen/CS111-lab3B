@@ -29,7 +29,7 @@ I_LINK_COUNT = 5
 I_LAST_CHANGE = 6
 I_MOD_TIME = 7
 I_ACCESS_TIME = 8
-I_FILE_SIZE = 9 
+I_FILE_SIZE = 9
 
 # DIRECTORY ENTRIES
 D_PARENT_INODE = 0
@@ -47,12 +47,14 @@ ID_BLOCK_NUM_INDIR = 3
 ID_BLOCK_NUM_DIR = 4
 
 if (len(sys.argv) != 2):
-    print("Incorrect number of arguments")
+    print("ERROR: Incorrect number of arguments")
     exit(1)
 
 filename = sys.argv[1]
 print ("filename: " + filename)
 
+# got help from:
+# https://docs.python.org/3/library/csv.html#module-contents
 with open(filename, newline='') as csvfile:
     info = csv.reader(csvfile, delimiter=' ', quotechar='|')
     for row in info:
