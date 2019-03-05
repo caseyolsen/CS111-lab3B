@@ -4,7 +4,7 @@ do
     curl -s http://web.cs.ucla.edu/classes/cs111/Samples/P3B-test_$i.csv -o test$i.csv
     echo === RUNNING TEST $i ===
     echo test result:
-    ./lab3b test$i.csv
+    python3 lab3b.py test$i.csv
     echo provided result:
     curl -s http://web.cs.ucla.edu/classes/cs111/Samples/P3B-test_$i.err
     rm -f test$i.csv
