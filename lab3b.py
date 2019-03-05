@@ -14,9 +14,9 @@ block_size = 0
 inode_size = 0
 blocks_per_group = 0
 first_non_reserved_inode = 0
+block_bitmap_block = 0
+inode_bitmap_block = 0
 inode_block = 0
-block_block = 0
-
 input_dict = {}
 
 # GLOBAL CONSTANTS
@@ -66,6 +66,7 @@ def main():
     check_links()
     check_inodes()
     check_indirect_blocks()
+    find_unreferenced_blocks()
 
     # got help from:
 # https://docs.python.org/3/library/csv.html#module-contents
@@ -94,10 +95,12 @@ def initialize(filename):
                     global first_non_reserved_inode
                     first_non_reserved_inode = int(row[7])
                 if row[0] == "GROUP":
+                    global block_bitmap_block
+                    block_bitmap_block = int(row[6])
+                    global inode_bitmap_block
+                    inode_bitmap_block = int(row[7])
                     global inode_block
-                    inode_block = int(row[7])
-                    global block_block
-                    block_block = int(row[6])
+                    inode_block = int(row[8])
 
                 if row[0] not in input_dict.keys():
                     input_dict[row[0]] = []
@@ -200,16 +203,18 @@ def isValidInode(inode):
 def check_inodes():
     for i in range(0, len(input_dict["INODE"])):
         if inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] == 0: 
-            print("ALLOCATED INODE {} ON FREELIST".format(input_dict["INODE"][i][I_INODE_NUMBER]))
-            return
-        else:
-            inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] = 2
-            #These are used inodes (correctly) not on the free list
-            for j in range(0, 12):
-                check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), j, 0, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 12]), 12, 1, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 268, 2, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 65804, 3, input_dict["INODE"][i][I_INODE_NUMBER])
+            print("ALLOCATED INODE {} ON FREELIST"
+                  .format(input_dict["INODE"][i][I_INODE_NUMBER]))
+        inode_bitmap[int(input_dict["INODE"][i][I_INODE_NUMBER])] = 2
+        for j in range(0, 12):
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), 
+                        j, 0, input_dict["INODE"][i][I_INODE_NUMBER])
+        check_block(int(input_dict["INODE"][i][I_BLOCKS + 12]), 
+                    12, 1, input_dict["INODE"][i][I_INODE_NUMBER])
+        check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 
+                    268, 2, input_dict["INODE"][i][I_INODE_NUMBER])
+        check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 
+                    65804, 3, input_dict["INODE"][i][I_INODE_NUMBER])
     for i in range(first_non_reserved_inode, len(inode_bitmap)):
         if inode_bitmap[i] == 1:
             print("UNALLOCATED INODE {} NOT ON FREELIST".format(i))
@@ -227,23 +232,26 @@ def check_block(b, offset, level, inode):
         block_type = "DOUBLE INDIRECT "
     else:
         block_type = "TRIPLE INDIRECT "
-    #print("CHECKING {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
     if b < 0 or b >= total_blocks:
-        print("INVALID {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
+        print("INVALID {}BLOCK {} IN INODE {} AT OFFSET {}"
+              .format(block_type, b, inode, offset))
         return
-    if b == 1024/block_size or b == block_block or b == inode_block:
-        print("RESERVED {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
+    if is_reserved_block(b):
+        print("RESERVED {}BLOCK {} IN INODE {} AT OFFSET {}"
+              .format(block_type, b, inode, offset))
         return
     if block_bitmap[b] == 0:
         print("ALLOCATED BLOCK {} ON FREELIST".format(b))
         return
     if block_bitmap[b] != 1:
-        print("DUPLICATE {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
+        print("DUPLICATE {}BLOCK {} IN INODE {} AT OFFSET {}"
+              .format(block_type, b, inode, offset))
         if block_bitmap[b] != -1:
-            print("DUPLICATE {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_bitmap[b][0], \
-                                                                         block_bitmap[b][1], \
-                                                                         block_bitmap[b][2], \
-                                                                         block_bitmap[b][3]))
+            print("DUPLICATE {}BLOCK {} IN INODE {} AT OFFSET {}"\
+                      .format(block_bitmap[b][0], \
+                              block_bitmap[b][1], \
+                              block_bitmap[b][2], \
+                              block_bitmap[b][3]))
         block_bitmap[b] = -1
         return
     block_bitmap[b] = [block_type, b, inode, offset]
@@ -255,5 +263,17 @@ def check_indirect_blocks():
                         input_dict["INDIRECT"][i][ID_INDIR_LEVEL], \
                         input_dict["INDIRECT"][i][ID_INODE_NUM])
     return
+
+def find_unreferenced_blocks():
+    for i in range(8, len(block_bitmap)):
+        if not is_reserved_block(i) and block_bitmap[i] == 1:
+            print("UNREFERENCED BLOCK {}".format(i))
+    return
+
+def is_reserved_block(b):
+    if b <= 1024/block_size or b <= 1024/block_size + 1 or \
+    b == block_bitmap_block or b == inode_bitmap_block or b == inode_block:
+        return True
+    return False
 
 main()
