@@ -92,6 +92,12 @@ def initialize(filename):
                     blocks_per_group = int(row[5])
                     global first_non_reserved_inode
                     first_non_reserved_inode = int(row[7])
+                if row[0] == "GROUP":
+                    global inode_block
+                    inode_block = int(row[7])
+                    global block_block
+                    block_block = int(row[6])
+
                 if row[0] not in input_dict.keys():
                     input_dict[row[0]] = []
                 if row[0] == "BFREE" or row[0] == "IFREE":
@@ -162,8 +168,8 @@ def check_inodes():
             for j in range(0, 12):
                 check_block(int(input_dict["INODE"][i][I_BLOCKS + j]), j, 0, input_dict["INODE"][i][I_INODE_NUMBER])
             check_block(int(input_dict["INODE"][i][I_BLOCKS + 12]), 12, 1, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 13, 2, input_dict["INODE"][i][I_INODE_NUMBER])
-            check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 14, 3, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 13]), 268, 2, input_dict["INODE"][i][I_INODE_NUMBER])
+            check_block(int(input_dict["INODE"][i][I_BLOCKS + 14]), 65804, 3, input_dict["INODE"][i][I_INODE_NUMBER])
     for i in range(first_non_reserved_inode, len(inode_bitmap)):
         if inode_bitmap[i] == 1:
             print("UNALLOCATED INODE {} NOT ON FREELIST".format(i))
