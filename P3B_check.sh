@@ -95,6 +95,7 @@ echo "... checking for submitter name in $README"
 NAME=`getName $README`
 let errors+=$?
 
+:'
 echo "... checking slip-day use in $README"
 SLIPDAYS=0
 slips=`grep "SLIPDAYS:" $README`
@@ -118,7 +119,7 @@ then
 else
 	echo "    no SLIPDAYS: entry"
 fi
-
+'
 echo "... checking for other expected files"
 checkFiles $MAKEFILE $EXPECTED
 let errors+=$?

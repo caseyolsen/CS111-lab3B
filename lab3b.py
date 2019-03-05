@@ -131,6 +131,7 @@ def check_links():
     for i in range(0, len(input_dict["DIRENT"])):
         link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1
         #print (isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])))
+        #print("INODE NUM: " + input_dict["DIRENT"][i][D_INODE_NUM] + " NAME: " + input_dict["DIRENT"][i][D_NAME])
         if (isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) != ""):
             print("DIRECTORY INODE " + input_dict["DIRENT"][i][D_INODE_NUM] + " NAME " + input_dict["DIRENT"][i][D_NAME] + isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) + " INODE " + input_dict["DIRENT"][i][D_PARENT_INODE])
     #print(link_count)
@@ -143,7 +144,9 @@ def check_links():
 def isValidInode(inode):
     if inode < 1 or inode > total_inodes:
         return "INVALID"
-    if inode_bitmap == 0:
+    #print (inode_bitmap)
+    #print(inode_bitmap[inode])
+    if inode_bitmap[inode] == 0:
         return "UNAVAILABLE"
     else:
         return ""
