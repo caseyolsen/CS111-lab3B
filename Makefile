@@ -1,6 +1,6 @@
-# NAME: Casey Olsen
-# ID: 004938486
-# EMAIL: casey.olsen@gmail.com
+# NAME: Casey Olsen,Kenna Wang
+# ID: 004938486,604939143
+# EMAIL: casey.olsen@gmail.com,kenna.wang6@gmail.com
 
 
 .SILENT:
