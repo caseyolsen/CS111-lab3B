@@ -63,8 +63,8 @@ def main():
     initialize(filename)
     get_block_bitmap()
     get_inode_bitmap()
-    check_links()
     check_inodes()
+    check_links()
     check_indirect_blocks()
     find_unreferenced_blocks()
 
@@ -183,7 +183,7 @@ def check_links():
     #    link_count.append(0)
 
 def points_to_directory(num):
-OH     for i in range(0, len(input_dict["INODE"])):
+    for i in range(0, len(input_dict["INODE"])):
         if input_dict["INODE"][i][I_INODE_NUMBER] == num:
             if input_dict["INODE"][i][I_FILE_TYPE] == 'd':
                 return True
