@@ -110,7 +110,7 @@ def initialize(filename):
                     input_dict[row[0]].append(row[1:])
                 #print(row)
                 #print(', '.join(row))
-            print(input_dict)
+            #print(input_dict)
     except EnvironmentError:
         print ("ERROR opening file\n")
         exit(1)
@@ -166,15 +166,14 @@ def check_links():
     inode_parent[EXT2_ROOT_INO] = EXT2_ROOT_INO
     for i in range(0, len(input_dict["DIRENT"])):
         if input_dict["DIRENT"][i][-1] == "\'..\'":
-            print ("inode_parent: " + str(inode_parent[i]))
-            print (input_dict["DIRENT"][i][D_INODE_NUM])
-            if inode_parent[i] == 0:
+            #print ("inode_parent: " + str(inode_parent[int(input_dict["DIRENT"][i][D_INODE_NUM])]))
+            #print (input_dict["DIRENT"][i][D_INODE_NUM])
+            if inode_parent[int(input_dict["DIRENT"][i][D_INODE_NUM])] == 0:
                 continue
-            if inode_parent[i] != int(input_dict["DIRENT"][i][D_INODE_NUM]): # and int(input_dict["DIRENT"][i][2]) != 2:
-                print("DIRECTORY INODE " + input_dict["DIRENT"][i][0] + " NAME '..' LINK TO INODE " + input_dict["DIRENT"][i][2] + " SHOULD BE " + inode_parent[i]) 
+            if inode_parent[int(input_dict["DIRENT"][i][D_INODE_NUM])] != int(input_dict["DIRENT"][i][D_INODE_NUM]): # and int(input_dict["DIRENT"][i][2]) != 2:
+                print("DIRECTORY INODE " + input_dict["DIRENT"][i][0] + " NAME '..' LINK TO INODE " + input_dict["DIRENT"][i][2] + " SHOULD BE " + str(inode_parent[int(input_dict["DIRENT"][i][D_INODE_NUM])])) 
                 
-    
-    print(inode_parent)
+    #print(inode_parent)
 '''
     if "'.'" not in input_dict["DIRENT"]:
         print (". is not in DIRECNT")
@@ -184,7 +183,7 @@ def check_links():
     #    link_count.append(0)
 
 def points_to_directory(num):
-    for i in range(0, len(input_dict["INODE"])):
+OH     for i in range(0, len(input_dict["INODE"])):
         if input_dict["INODE"][i][I_INODE_NUMBER] == num:
             if input_dict["INODE"][i][I_FILE_TYPE] == 'd':
                 return True
@@ -196,7 +195,7 @@ def isValidInode(inode):
     #print (inode_bitmap)
     #print(inode_bitmap[inode])
     if inode_bitmap[inode] == 0:
-        return "UNAVAILABLE"
+        return "UNALLOCATED"
     else:
         return ""
 
