@@ -20,6 +20,7 @@ block_block = 0
 input_dict = {}
 
 # GLOBAL CONSTANTS
+EXT2_ROOT_INO = 2
 
 # INODE SUMMARY
 I_INODE_NUMBER = 0
@@ -106,7 +107,7 @@ def initialize(filename):
                     input_dict[row[0]].append(row[1:])
                 #print(row)
                 #print(', '.join(row))
-            #print(input_dict)
+            print(input_dict)
     except EnvironmentError:
         print ("ERROR opening file\n")
         exit(1)
@@ -134,22 +135,58 @@ def get_inode_bitmap():
 
 def check_links():
     link_count = [0] * total_inodes
+
+    # NEW WAY OF DOING IT
+    inode_parent = [0] * total_inodes
+
     for i in range(0, len(input_dict["DIRENT"])):
         #print ("TOTAL: " + str(total_inodes) + ", ind: " + (input_dict["DIRENT"][i][D_INODE_NUM]))
         #link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1
         #print (isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])))
         #print("INODE NUM: " + input_dict["DIRENT"][i][D_INODE_NUM] + " NAME: " + input_dict["DIRENT"][i][D_NAME])
+        #if (input_dict["DIRENT"][i][-1] != "\'.\'" and input_dict["DIRENT"][i][-1] != "\'..\'"):
+        #    inode_parent[int(input_dict["DIRENT"][i][D_INODE_NUM])] = int(input_dict["DIRENT"][i][D_PARENT_INODE])
+
         if (isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) != ""):
             print("DIRECTORY INODE " + input_dict["DIRENT"][i][D_PARENT_INODE] + " NAME " + input_dict["DIRENT"][i][D_NAME] + " " + isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) + " INODE " + input_dict["DIRENT"][i][D_INODE_NUM])
         else:
-            link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1 
+            link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1
+            if (input_dict["DIRENT"][i][-1] != "\'.\'" and input_dict["DIRENT"][i][-1] != "\'..\'" and points_to_directory(input_dict["DIRENT"][i][D_INODE_NUM])):
+                inode_parent[int(input_dict["DIRENT"][i][D_INODE_NUM])] = int(input_dict["DIRENT"][i][D_PARENT_INODE])
+            #else:
+            #    print("HERE: " + input_dict["DIRENT"][i][-1])
             #print(link_count)
     for i in range(0, len(input_dict["INODE"])):
         if int(input_dict["INODE"][i][I_LINK_COUNT]) != link_count[int(input_dict["INODE"][i][I_INODE_NUMBER])]:
             print("INODE " + str(input_dict["INODE"][i][I_INODE_NUMBER]) + " HAS " + str(link_count[int(input_dict["INODE"][i][I_INODE_NUMBER])]) + " LINKS BUT LINKCOUNT IS " + str(input_dict["INODE"][i][I_LINK_COUNT]))
-    #for i in range(0, total_inodes):
+
+    inode_parent[EXT2_ROOT_INO] = EXT2_ROOT_INO
+    for i in range(0, len(input_dict["DIRENT"])):
+        if input_dict["DIRENT"][i][-1] == "\'..\'":
+            print ("inode_parent: " + str(inode_parent[i]))
+            print (input_dict["DIRENT"][i][D_INODE_NUM])
+            if inode_parent[i] == 0:
+                continue
+            if inode_parent[i] != int(input_dict["DIRENT"][i][D_INODE_NUM]): # and int(input_dict["DIRENT"][i][2]) != 2:
+                print("DIRECTORY INODE " + input_dict["DIRENT"][i][0] + " NAME '..' LINK TO INODE " + input_dict["DIRENT"][i][2] + " SHOULD BE " + inode_parent[i]) 
+                
+    
+    print(inode_parent)
+'''
+    if "'.'" not in input_dict["DIRENT"]:
+        print (". is not in DIRECNT")
+    if "'..'" not in input_dict["DIRENT"]:
+        print (".. not in DIRECNT")
+   '''         #for i in range(0, total_inodes):
     #    link_count.append(0)
 
+def points_to_directory(num):
+    for i in range(0, len(input_dict["INODE"])):
+        if input_dict["INODE"][i][I_INODE_NUMBER] == num:
+            if input_dict["INODE"][i][I_FILE_TYPE] == 'd':
+                return True
+    return False
+    
 def isValidInode(inode):
     if inode < 1 or inode > total_inodes:
         return "INVALID"
