@@ -14,9 +14,9 @@ block_size = 0
 inode_size = 0
 blocks_per_group = 0
 first_non_reserved_inode = 0
+block_bitmap_block = 0
+inode_bitmap_block = 0
 inode_block = 0
-block_block = 0
-
 input_dict = {}
 
 # GLOBAL CONSTANTS
@@ -65,6 +65,7 @@ def main():
     check_links()
     check_inodes()
     check_indirect_blocks()
+    #find_unreferenced_blocks()
 
     # got help from:
 # https://docs.python.org/3/library/csv.html#module-contents
@@ -93,10 +94,12 @@ def initialize(filename):
                     global first_non_reserved_inode
                     first_non_reserved_inode = int(row[7])
                 if row[0] == "GROUP":
+                    global block_bitmap_block
+                    block_bitmap_block = int(row[6])
+                    global inode_bitmap_block
+                    inode_bitmap_block = int(row[7])
                     global inode_block
-                    inode_block = int(row[7])
-                    global block_block
-                    block_block = int(row[6])
+                    inode_block = int(row[8])
 
                 if row[0] not in input_dict.keys():
                     input_dict[row[0]] = []
@@ -186,7 +189,7 @@ def check_block(b, offset, level, inode):
     if b < 0 or b >= total_blocks:
         print("INVALID {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
         return
-    if b == 1024/block_size or b == block_block or b == inode_block:
+    if b <= 1024/block_size + 1 or b == block_bitmap_block or b == inode_bitmap_block or b == inode_block:
         print("RESERVED {}BLOCK {} IN INODE {} AT OFFSET {}".format(block_type, b, inode, offset))
         return
     if block_bitmap[b] == 0:
@@ -210,5 +213,13 @@ def check_indirect_blocks():
                         input_dict["INDIRECT"][i][ID_INDIR_LEVEL], \
                         input_dict["INDIRECT"][i][ID_INODE_NUM])
     return
+
+def find_unreferenced_blocks():
+    for i in range(0, len(block_bitmap)):
+        if i <= 1024/block_size + 1 or i == block_bitmap_block or i == inode_bitmap_block or i == inode_block:
+            continue
+        if block_bitmap[i] == 1:
+            print("UNREFERENCED BLOCK {}".format(i))
+        return
 
 main()
