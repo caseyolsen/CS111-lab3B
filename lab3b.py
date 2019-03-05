@@ -135,12 +135,15 @@ def get_inode_bitmap():
 def check_links():
     link_count = [0] * total_inodes
     for i in range(0, len(input_dict["DIRENT"])):
-        link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1
+        #print ("TOTAL: " + str(total_inodes) + ", ind: " + (input_dict["DIRENT"][i][D_INODE_NUM]))
+        #link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1
         #print (isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])))
         #print("INODE NUM: " + input_dict["DIRENT"][i][D_INODE_NUM] + " NAME: " + input_dict["DIRENT"][i][D_NAME])
         if (isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) != ""):
-            print("DIRECTORY INODE " + input_dict["DIRENT"][i][D_INODE_NUM] + " NAME " + input_dict["DIRENT"][i][D_NAME] + isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) + " INODE " + input_dict["DIRENT"][i][D_PARENT_INODE])
-    #print(link_count)
+            print("DIRECTORY INODE " + input_dict["DIRENT"][i][D_PARENT_INODE] + " NAME " + input_dict["DIRENT"][i][D_NAME] + " " + isValidInode(int(input_dict["DIRENT"][i][D_INODE_NUM])) + " INODE " + input_dict["DIRENT"][i][D_INODE_NUM])
+        else:
+            link_count[int(input_dict["DIRENT"][i][D_INODE_NUM])] += 1 
+            #print(link_count)
     for i in range(0, len(input_dict["INODE"])):
         if int(input_dict["INODE"][i][I_LINK_COUNT]) != link_count[int(input_dict["INODE"][i][I_INODE_NUMBER])]:
             print("INODE " + str(input_dict["INODE"][i][I_INODE_NUMBER]) + " HAS " + str(link_count[int(input_dict["INODE"][i][I_INODE_NUMBER])]) + " LINKS BUT LINKCOUNT IS " + str(input_dict["INODE"][i][I_LINK_COUNT]))
